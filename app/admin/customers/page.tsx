@@ -1,0 +1,48 @@
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+
+export default async function CustomersPage() {
+  const supabase = await createServerSupabaseClient()
+  const { data: customers } = await supabase
+    .from('customers')
+    .select('id, name, contact_person, phone, city, gst')
+    .order('name')
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-700 bg-slate-800/50">
+                <th className="text-left py-3 px-4 text-slate-400 font-medium">Name</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-medium">Contact Person</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-medium">Phone</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-medium">City</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-medium">GST</th>
+              </tr>
+            </thead>
+            <tbody>
+              {!customers || customers.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center text-slate-500">
+                    No customers found
+                  </td>
+                </tr>
+              ) : (
+                customers.map((customer) => (
+                  <tr key={customer.id} className="border-b border-slate-700/50 last:border-0 hover:bg-slate-700/30">
+                    <td className="py-3 px-4 text-white">{customer.name}</td>
+                    <td className="py-3 px-4 text-slate-300">{customer.contact_person || '-'}</td>
+                    <td className="py-3 px-4 text-slate-300">{customer.phone || '-'}</td>
+                    <td className="py-3 px-4 text-slate-300">{customer.city || '-'}</td>
+                    <td className="py-3 px-4 text-slate-300 font-mono text-xs">{customer.gst || '-'}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
