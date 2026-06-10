@@ -1,7 +1,7 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export default async function ProfitLossPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const { data: entries } = await supabase
     .from('gl_entries')
     .select('account_name, debit, credit')

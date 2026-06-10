@@ -1,7 +1,7 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export default async function ReceivablesPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const { data: invoices } = await supabase
     .from('sales_invoices')
     .select('invoice_number, invoice_date, due_date, grand_total, status, customers(name)')

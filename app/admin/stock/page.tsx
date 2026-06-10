@@ -1,7 +1,7 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export default async function StockPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const { data: stock } = await supabase
     .from('stock_bin')
     .select(`

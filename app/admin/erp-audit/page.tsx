@@ -1,7 +1,7 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export default async function ErpAuditPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const { data: entries } = await supabase
     .from('gl_entries')
     .select('id, entry_date, account_name, debit, credit, description, reference_type, reference_id')

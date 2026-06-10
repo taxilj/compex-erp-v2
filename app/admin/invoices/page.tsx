@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export default async function InvoicesPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
 
   const { data: invoices } = await supabase
     .from('sales_invoices')
