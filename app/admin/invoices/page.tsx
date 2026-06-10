@@ -45,7 +45,7 @@ export default async function InvoicesPage() {
                 <td className="px-6 py-4">{inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString('en-IN') : '-'}</td>
                 <td className="px-6 py-4">{inv.due_date ? new Date(inv.due_date).toLocaleDateString('en-IN') : '-'}</td>
                 <td className="px-6 py-4 font-medium text-white">
-                  ₹{Number(inv.total_amount).toLocaleString('en-IN')}
+                  ₹{Number(inv.total_amount ?? 0).toLocaleString('en-IN')}
                 </td>
                 <td className="px-6 py-4">
                   <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${statusStyles[inv.status] || 'bg-slate-100 text-slate-800'}`}>
