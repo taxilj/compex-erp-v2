@@ -4,11 +4,11 @@ export default async function ReceivablesPage() {
   const supabase = await createServerSupabaseClient()
   const { data: invoices } = await supabase
     .from('sales_invoices')
-    .select('invoice_number, invoice_date, due_date, total_amount, status, customers(name)')
+    .select('invoice_number, invoice_date, due_date, grand_total, status, customers(name)')
     .in('status', ['Unpaid', 'Overdue'])
     .order('due_date', { ascending: true })
 
-  const totalDue = (invoices ?? []).reduce((sum, inv) => sum + Number(inv.total_amount), 0)
+  const totalDue = (invoices ?? []).reduce((sum, inv) => sum + Number(inv.grand_total), 0)
 
   function daysOverdue(dueDate: string | null) {
     if (!dueDate) return 0
@@ -60,7 +60,7 @@ export default async function ReceivablesPage() {
                     <td className="py-3 px-4 text-white">{(inv as any).customers?.name || '-'}</td>
                     <td className="py-3 px-4 text-slate-300">{inv.invoice_number}</td>
                     <td className="py-3 px-4 text-slate-300">{inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString('en-IN') : '-'}</td>
-                    <td className="py-3 px-4 text-right text-white">₹{Number(inv.total_amount).toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4 text-right text-white">₹{Number(inv.grand_total).toLocaleString('en-IN')}</td>
                     <td className="py-3 px-4 text-right">
                       {daysOverdue(inv.due_date) > 0 ? (
                         <span className="text-red-400">{daysOverdue(inv.due_date)}d</span>

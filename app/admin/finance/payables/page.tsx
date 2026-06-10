@@ -4,11 +4,11 @@ export default async function PayablesPage() {
   const supabase = await createServerSupabaseClient()
   const { data: orders } = await supabase
     .from('purchase_orders')
-    .select('po_number, order_date, total_amount, status, suppliers(name)')
+    .select('po_number, order_date, grand_total, status, suppliers(name)')
     .in('status', ['Pending', 'Approved', 'Partially Received'])
     .order('order_date', { ascending: true })
 
-  const totalDue = (orders ?? []).reduce((sum, po) => sum + Number(po.total_amount), 0)
+  const totalDue = (orders ?? []).reduce((sum, po) => sum + Number(po.grand_total), 0)
 
   return (
     <div className="space-y-4">
@@ -54,7 +54,7 @@ export default async function PayablesPage() {
                     <td className="py-3 px-4 text-white">{(po.suppliers as unknown as { name: string })?.name || '-'}</td>
                     <td className="py-3 px-4 text-slate-300">{po.po_number}</td>
                     <td className="py-3 px-4 text-slate-300">{po.order_date ? new Date(po.order_date).toLocaleDateString('en-IN') : '-'}</td>
-                    <td className="py-3 px-4 text-right text-white">₹{Number(po.total_amount).toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4 text-right text-white">₹{Number(po.grand_total).toLocaleString('en-IN')}</td>
                     <td className="py-3 px-4">
                       <span className={`text-xs px-2 py-0.5 rounded ${
                         po.status === 'Pending' ? 'bg-amber-900 text-amber-300' :

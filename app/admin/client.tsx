@@ -3,7 +3,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useMemo } from 'react'
 
-type Invoice = { total_amount: number; created_at: string }
+type Invoice = { grand_total: number; created_at: string }
 
 export default function DashboardClient({
   userName,
@@ -17,14 +17,14 @@ export default function DashboardClient({
   totalItems: number
   totalSuppliers: number
   totalCustomers: number
-  recentInvoices: { invoice_number: string; total_amount: number; status: string; created_at: string }[]
+  recentInvoices: { invoice_number: string; grand_total: number; status: string; created_at: string }[]
   invoices: Invoice[]
 }) {
   const chartData = useMemo(() => {
     const months: Record<string, number> = {}
     invoices.forEach((inv) => {
       const m = inv.created_at?.slice(0, 7)
-      if (m) months[m] = (months[m] || 0) + Number(inv.total_amount)
+      if (m) months[m] = (months[m] || 0) + Number(inv.grand_total)
     })
     return Object.entries(months).map(([month, amount]) => ({ month, amount }))
   }, [invoices])
@@ -81,7 +81,7 @@ export default function DashboardClient({
                     <p className="text-slate-500 text-xs">{inv.created_at?.slice(0, 10)}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-white text-sm">₹{Number(inv.total_amount).toLocaleString('en-IN')}</p>
+                    <p className="text-white text-sm">₹{Number(inv.grand_total).toLocaleString('en-IN')}</p>
                     <span className={`text-xs px-2 py-0.5 rounded ${inv.status === 'Paid' ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300'}`}>
                       {inv.status}
                     </span>

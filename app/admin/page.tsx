@@ -12,13 +12,13 @@ export default async function AdminPage() {
 
   const { data: recentInvoices } = await supabase
     .from('sales_invoices')
-    .select('invoice_number, total_amount, status, created_at')
+    .select('invoice_number, grand_total, status, created_at')
     .order('created_at', { ascending: false })
     .limit(5)
 
   const { data: invoices } = await supabase
     .from('sales_invoices')
-    .select('total_amount, created_at')
+    .select('grand_total, created_at')
 
   return (
     <DashboardClient

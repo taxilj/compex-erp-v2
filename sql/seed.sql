@@ -45,7 +45,7 @@ INSERT INTO customers (id, name, contact_person, phone, email, city, state, gst,
   ('e0000000-0000-0000-0000-000000000002', 'Vadodara Devices Pvt Ltd', 'Priya Mehta', '+91-265-2222222', 'priya@vadodaradevices.in', 'Vadodara', 'Gujarat', '24VWXY3456Z1A7', 'a0000000-0000-0000-0000-000000000001');
 
 -- Sales Invoice
-INSERT INTO sales_invoices (id, invoice_number, customer_id, invoice_date, due_date, status, subtotal, gst_amount, total_amount, notes, company_id)
+INSERT INTO sales_invoices (id, invoice_number, customer_id, invoice_date, due_date, status, subtotal, gst_amount, grand_total, notes, company_id)
 VALUES (
   'f0000000-0000-0000-0000-000000000001',
   'INV-2026-001',

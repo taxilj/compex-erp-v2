@@ -87,7 +87,7 @@ export default async function PurchaseOrderDetailPage({
             <tr>
               <td colSpan={3} className="px-6 py-4 text-right font-medium text-white">Total</td>
               <td className="px-6 py-4 text-right font-bold text-white">
-                ₹{Number(po.total_amount).toLocaleString('en-IN')}
+                ₹{Number(po.grand_total).toLocaleString('en-IN')}
               </td>
             </tr>
           </tfoot>
