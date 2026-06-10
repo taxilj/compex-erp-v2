@@ -1,10 +1,10 @@
 import { auth } from '@/lib/auth'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import DashboardClient from './client'
 
 export default async function AdminPage() {
   const session = await auth()
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
 
   const { count: totalItems } = await supabase.from('items').select('*', { count: 'exact', head: true })
   const { count: totalSuppliers } = await supabase.from('suppliers').select('*', { count: 'exact', head: true })
