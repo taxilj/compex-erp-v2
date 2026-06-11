@@ -1,0 +1,64 @@
+-- gst_entries: transaction-level GST register for GSTR-1 / GSTR-3B reporting
+-- This table is populated by triggers on sales_invoices / purchase_orders
+-- to avoid re-computing GST aggregates from line items on every report view.
+--
+-- Reference schema (NOT executed by this migration):
+--
+-- CREATE TABLE gst_entries (
+--   id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+--   company_id    BIGINT NOT NULL REFERENCES companies(id),
+--   entry_type    TEXT NOT NULL CHECK (entry_type IN ('sales', 'purchase', 'credit_note', 'debit_note')),
+--   reference_id  UUID NOT NULL,             -- FK to sales_invoices.id or purchase_orders.id
+--   reference_no  TEXT NOT NULL,              -- invoice_number or po_number
+--   transaction_date DATE NOT NULL,
+--   customer_gstin TEXT,                      -- NULL for B2C
+--   supplier_gstin  TEXT,                     -- NULL for expenses without GST
+--   taxable_value NUMERIC(12,2) NOT NULL,
+--   gst_rate      NUMERIC(5,2) NOT NULL,
+--   cgst          NUMERIC(12,2) NOT NULL DEFAULT 0,
+--   sgst          NUMERIC(12,2) NOT NULL DEFAULT 0,
+--   igst          NUMERIC(12,2) NOT NULL DEFAULT 0,
+--   cess          NUMERIC(12,2) NOT NULL DEFAULT 0,
+--   hsn_code      TEXT,
+--   created_at    TIMESTAMPTZ DEFAULT now()
+-- );
+--
+-- CREATE INDEX idx_gst_entries_period ON gst_entries(transaction_date);
+-- CREATE INDEX idx_gst_entries_type  ON gst_entries(entry_type);
+-- COMMENT ON TABLE gst_entries IS 'GST register materialised from invoice line items for compliance reporting';
+
+-- =============================================================================
+-- Read-only view: gstr1_view — outward supply summary for GSTR-1
+-- =============================================================================
+-- CREATE OR REPLACE VIEW gstr1_view AS
+-- SELECT
+--   c.gst                        AS customer_gstin,
+--   c.name                       AS customer_name,
+--   si.invoice_number,
+--   si.invoice_date,
+--   ii.hsn_code,
+--   ii.gst_rate,
+--   SUM(ii.taxable_value)         AS taxable_value,
+--   SUM(ii.taxable_value * ii.gst_rate / 100) AS gst_amount
+-- FROM sales_invoices si
+-- JOIN customers c ON c.id = si.customer_id
+-- JOIN invoice_items ii ON ii.invoice_id = si.id
+-- WHERE si.status <> 'Cancelled'
+-- GROUP BY c.gst, c.name, si.invoice_number, si.invoice_date, ii.hsn_code, ii.gst_rate
+-- ORDER BY si.invoice_date, si.invoice_number;
+
+-- =============================================================================
+-- Read-only view: gstr3b_view — rate-wise summary for GSTR-3B
+-- =============================================================================
+-- CREATE OR REPLACE VIEW gstr3b_view AS
+-- SELECT
+--   date_trunc('month', si.invoice_date) AS period,
+--   ii.gst_rate,
+--   COUNT(DISTINCT si.id)          AS invoice_count,
+--   SUM(ii.taxable_value)          AS total_taxable,
+--   SUM(ii.taxable_value * ii.gst_rate / 100) AS total_gst
+-- FROM sales_invoices si
+-- JOIN invoice_items ii ON ii.invoice_id = si.id
+-- WHERE si.status <> 'Cancelled'
+-- GROUP BY date_trunc('month', si.invoice_date), ii.gst_rate
+-- ORDER BY period DESC, ii.gst_rate;
