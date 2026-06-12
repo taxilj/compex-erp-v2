@@ -36,7 +36,7 @@
 - Protected routes via `middleware.ts` — redirects to `/login` if unauthenticated
 
 ### Build
-- `npm run build` passes with **0 errors** — all 18 routes compile
+- `npm run build` passes with **0 errors** — all 34 routes compile (9/34 dynamic, 25/34 static)
 - Middleware deprecated in favor of proxy config; `npm run dev` works
 
 ## Seeded Data Details
@@ -51,6 +51,14 @@
 4. Invoice detail: `item` param typed as `any`
 5. PO detail: `item` param typed as `any`
 6. BOM: two-table design (`bom_headers` + `bom_items`), DDL via CLI, seed via service-role key, added `GRANT` for new tables
+7. Created 18 missing `error.tsx` + `loading.tsx` files across 6 page sections (bom, delivery-notes, production-orders, quotations, sales-orders, vendors)
+8. Fixed `createAdminClient()` — removed `await` from 9 files where sync function was incorrectly awaited
+9. Vendors: single-page with detail, status toggle, CSV/API ingestion
+10. Production Orders: list + detail + create with MRP integration placeholders
+11. Quotations: list + detail + create with approval workflow
+12. Sales Orders: list + detail + create with invoice generation
+13. Delivery Notes: list + detail + create with stock deduction
+14. GST: GSTR1 + GSTR3B dashboards with export endpoints
 
 ## Pages
 - `/admin` — Dashboard (stats cards + chart)
@@ -72,3 +80,25 @@
 - `/admin/material-requests/[id]` — MR detail
 - `/admin/grn` — GRN list
 - `/admin/grn/[id]` — GRN detail
+- `/admin/vendors` — Vendor list + status toggle
+- `/admin/vendors/[id]` — Vendor detail
+- `/admin/production-orders` — Production orders list
+- `/admin/production-orders/[id]` — PO detail
+- `/admin/production-orders/new` — Create production order
+- `/admin/quotations` — Quotations list
+- `/admin/quotations/[id]` — Quotation detail
+- `/admin/quotations/new` — Create quotation
+- `/admin/sales-orders` — Sales orders list
+- `/admin/sales-orders/[id]` — Sales order detail
+- `/admin/sales-orders/new` — Create sales order
+- `/admin/delivery-notes` — Delivery notes list
+- `/admin/delivery-notes/[id]` — Delivery note detail
+- `/admin/delivery-notes/new` — Create delivery note
+- `/admin/gst` — GST dashboard
+- `/admin/gst/gstr1` — GSTR1 report
+- `/admin/gst/gstr3b` — GSTR3B report
+- `/api/auth/[...nextauth]` — NextAuth handlers
+- `/api/gst/gstr1/export` — GSTR1 CSV export
+- `/api/gst/gstr3b/export` — GSTR3B CSV export
+- `/api/vendors/[id]/status` — Vendor status toggle
+- `/api/vendors/ingest` — Vendor CSV/API ingestion

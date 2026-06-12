@@ -5,34 +5,79 @@ import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useState } from 'react'
 
-const navItems = [
-  { label: 'Dashboard', href: '/admin', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-  { label: 'Items', href: '/admin/items', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-  { label: 'Stock', href: '/admin/stock', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-  { label: 'BOM', href: '/admin/bom', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-  { label: 'Production Orders', href: '/admin/production-orders', icon: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z' },
-  { label: 'Suppliers', href: '/admin/suppliers', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
-  { label: 'Vendors', href: '/admin/vendors', icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' },
-  { label: 'Customers', href: '/admin/customers', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
-  { label: 'Purchase Orders', href: '/admin/purchase-orders', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-  { label: 'Material Requests', href: '/admin/material-requests', icon: 'M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9' },
-  { label: 'GRN', href: '/admin/grn', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-  { label: 'Quotations', href: '/admin/quotations', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-  { label: 'Sales Orders', href: '/admin/sales-orders', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
-  { label: 'Delivery Notes', href: '/admin/delivery-notes', icon: 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m0 0a1 1 0 01-1-1V4a1 1 0 011-1h6a1 1 0 011 1v10m-7 0h14m-7-6h.01M7 16h.01' },
-  { label: 'Sales Invoices', href: '/admin/invoices', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-  { label: 'GST Reports', href: '/admin/gst', icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3' },
-  { label: 'Finance', href: '/admin/finance/receivables', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-  { label: 'ERP Audit', href: '/admin/erp-audit', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+interface NavItem {
+  label: string
+  href: string
+  icon: string
+}
+
+interface NavSection {
+  title: string
+  items: NavItem[]
+}
+
+const navSections: NavSection[] = [
+  {
+    title: 'Overview',
+    items: [
+      { label: 'Dashboard', href: '/admin', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+    ],
+  },
+  {
+    title: 'Inventory',
+    items: [
+      { label: 'Items', href: '/admin/items', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+      { label: 'Stock', href: '/admin/stock', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
+      { label: 'BOM', href: '/admin/bom', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+      { label: 'Production Orders', href: '/admin/production-orders', icon: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z' },
+    ],
+  },
+  {
+    title: 'Procurement',
+    items: [
+      { label: 'Suppliers', href: '/admin/suppliers', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
+      { label: 'Vendors', href: '/admin/vendors', icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' },
+      { label: 'Purchase Orders', href: '/admin/purchase-orders', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+      { label: 'Material Requests', href: '/admin/material-requests', icon: 'M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9' },
+      { label: 'GRN', href: '/admin/grn', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+    ],
+  },
+  {
+    title: 'Sales',
+    items: [
+      { label: 'Customers', href: '/admin/customers', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+      { label: 'Quotations', href: '/admin/quotations', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+      { label: 'Sales Orders', href: '/admin/sales-orders', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
+      { label: 'Delivery Notes', href: '/admin/delivery-notes', icon: 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10m0 0a1 1 0 01-1-1V4a1 1 0 011-1h6a1 1 0 011 1v10m-7 0h14m-7-6h.01M7 16h.01' },
+      { label: 'Sales Invoices', href: '/admin/invoices', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+    ],
+  },
+  {
+    title: 'Finance',
+    items: [
+      { label: 'Finance', href: '/admin/finance/receivables', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+      { label: 'ERP Audit', href: '/admin/erp-audit', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+    ],
+  },
+  {
+    title: 'GST',
+    items: [
+      { label: 'GST Reports', href: '/admin/gst', icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3' },
+    ],
+  },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
     <div className="min-h-screen flex">
-      <aside className={`bg-[#0f172a] text-white flex flex-col transition-all duration-200 ${collapsed ? 'w-16' : 'w-56'}`}>
+      <aside className={`bg-[#0f172a] text-white flex flex-col transition-all duration-200 flex-shrink-0 overflow-hidden
+        ${mobileOpen ? 'fixed inset-0 z-50 w-full' : collapsed ? 'w-16' : 'w-56'}
+        max-md:${mobileOpen ? 'fixed inset-0 z-50' : 'hidden'}`}
+      >
         <div className="p-4 border-b border-slate-800 flex items-center gap-3">
           <svg viewBox="0 0 100 100" className="w-8 h-8 flex-shrink-0" fill="none">
             <rect x="10" y="10" width="80" height="80" rx="8" stroke="#2563eb" strokeWidth="4" fill="none" />
@@ -43,33 +88,51 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <line x1="82" y1="78" x2="90" y2="86" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" />
           </svg>
           {!collapsed && <span className="font-bold text-blue-500">Compex ERP</span>}
+          {mobileOpen && (
+            <button onClick={() => setMobileOpen(false)} className="ml-auto text-slate-400 hover:text-white">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
 
-        <nav className="flex-1 py-2 overflow-y-auto">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                  isActive ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                } ${collapsed ? 'justify-center px-0' : ''}`}
-                title={collapsed ? item.label : undefined}
-              >
-                <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                </svg>
-                {!collapsed && item.label}
-              </Link>
-            )
-          })}
+        <nav className="flex-1 py-2 overflow-y-auto scrollbar-none">
+          {navSections.map((section) => (
+            <div key={section.title}>
+              {!collapsed && (
+                <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  {section.title}
+                </p>
+              )}
+              {section.items.map((item) => {
+                const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'))
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors relative ${
+                      isActive ? 'bg-blue-600/20 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    } ${collapsed ? 'justify-center px-0' : ''}`}
+                    title={collapsed ? item.label : undefined}
+                  >
+                    {isActive && !collapsed && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-500 rounded-r-full" />}
+                    <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                    </svg>
+                    {!collapsed && item.label}
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
         </nav>
 
         <div className="p-3 border-t border-slate-800">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="w-full text-xs text-slate-500 hover:text-white py-1"
+            className="w-full text-xs text-slate-500 hover:text-white py-1 max-md:hidden"
           >
             {collapsed ? '→' : 'Collapse'}
           </button>
@@ -86,10 +149,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       <main className="flex-1 bg-slate-900 min-h-screen overflow-auto">
-        <header className="h-14 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-6">
-          <h2 className="text-white font-medium">
-            {navItems.find(i => i.href === pathname)?.label || 'Compex ERP'}
-          </h2>
+        <header className="h-14 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-4 md:px-6">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setMobileOpen(true)} className="text-slate-400 hover:text-white md:hidden">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <h2 className="text-white font-medium">
+              {navSections.flatMap(s => s.items).find(i => i.href === pathname)?.label || 'Compex ERP'}
+            </h2>
+          </div>
           <div className="text-slate-400 text-sm">₹ INR</div>
         </header>
         <div className="p-6">
